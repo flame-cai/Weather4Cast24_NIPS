@@ -17,13 +17,13 @@ from src.utils import crps
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Set the output folder
-output_folder = "/mnt/data/Weather4Cast/Submissions_t"
+output_folder = "../output_folder"
 os.makedirs(output_folder, exist_ok=True)
 
 # Load the trained generator model
 generator = ImprovedGenerator(in_channels=1, out_channels=1)
 generator.load_state_dict(
-    torch.load("/mnt/data/Weather4Cast/improved_generator_5_200i.pth"), strict=False
+    torch.load("../improved_generator_5_200i.pth"), strict=False
 )
 generator.eval()
 
@@ -157,7 +157,7 @@ def process_case(img, slot_start, slot_end, x_start, x_end, y_start, y_end):
 
 def process_file(year, file_number):
     # Set the output folder
-    output_folder = f"/mnt/data/Weather4Cast/Submissions_t/{year}/"
+    output_folder = f"../Submissions_t/{year}/"
     os.makedirs(output_folder, exist_ok=True)
 
     # Use zero padding for file number
@@ -167,7 +167,7 @@ def process_file(year, file_number):
     year_suffix = str(year)[-2:]  # Get last two digits of the year
 
     # Load and preprocess HRIT data
-    input_data = f"/mnt/data/Weather4Cast/data/{year}/HRIT/roxi_{padded_file_number}.cum1test{year_suffix}.reflbt0.ns.h5"
+    input_data = f"../{year}/HRIT/roxi_{padded_file_number}.cum1test{year_suffix}.reflbt0.ns.h5"
     with h5py.File(input_data, "r") as hrit_file:
         img = hrit_file["REFL-BT"][:]
         selected_channels_indices = [3, 4, 5, 6]
@@ -177,7 +177,7 @@ def process_file(year, file_number):
 
     # Read input CSV
     input_csv = (
-        f"/mnt/data/Weather4Cast/roxi_{padded_file_number}.cum1test_dictionary.csv"
+        f"/..t/roxi_{padded_file_number}.cum1test_dictionary.csv"
     )
     df = pd.read_csv(input_csv)
 
@@ -221,16 +221,3 @@ for year in years:
 
 print("All processing complete.")
 
-# optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
-# flow = optical_flow.calc(
-#     pad_image(img_float32[slot_start], pad_size),
-#     pad_image(img_float32[slot_end-1], pad_size),
-#     None
-# )
-
-# Interpolate frames using optical flow
-# print(img_padded.shape)
-# edge_mask = create_edge_mask(img_padded.shape)
-# predicted_frames = interpolate_frames(img_padded, coords, flow, edge_mask)
-# predicted_frames = [frame[pad_size:-pad_size, pad_size:-pad_size] for frame in predicted_frames]
-# print(len(predicted_frames))
