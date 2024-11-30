@@ -93,7 +93,6 @@ def process_case(img, slot_start, slot_end, x_start, x_end, y_start, y_end):
 
     # Convert the image to 32-bit float single-channel format
     img_float32 = img.astype(np.float32)
-    # img_padded = pad_image(img_float32[slot_start], pad_size)
     img_padded = pad_image(img_float32[slot_start:slot_end])
 
     # Calculate optical flow
@@ -112,7 +111,6 @@ def process_case(img, slot_start, slot_end, x_start, x_end, y_start, y_end):
     pix2pix_outputs = []
     for frame in predicted_frames:
         # Apply Otsu's thresholding
-        # frame[frame==np.nan]=0
         frame = np.nan_to_num(
             frame,
             nan=np.nanmax(frame),
@@ -137,14 +135,11 @@ def process_case(img, slot_start, slot_end, x_start, x_end, y_start, y_end):
             input_sequence = input_image.unsqueeze(0).unsqueeze(0)
             pix2pix_output = ((generator(input_sequence)) + 1) * 5
             pix2pix_output = pix2pix_output.squeeze().cpu().numpy()
-            # print(np.unique(pix2pix_output))
-            # pix2pix_output[pix2pix_output > 4.9] = 0
             pix2pix_output[pix2pix_output < 0.001] = 0
             pix2pix_output = pix2pix_output[:252, :252]
 
         # Resample pix2pix output to 1512x1512
         resampled_output = resample_image(pix2pix_output)
-        # print(resampled_output.sum())
         pix2pix_outputs.append(resampled_output)
 
     # Extract 32x32 box and compute average
