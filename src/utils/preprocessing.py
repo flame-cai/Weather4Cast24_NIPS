@@ -103,7 +103,7 @@ def preprocess_all(base_path, year, file_types=["val", "train"]):
 
 
 if __name__ == "__main__":
-    base_path = "/mnt/data/Weather4Cast/data"
+    base_path = "../data"
     for year in [2019, 2020]:
         print(f"Processing year {year}")
         preprocess_all(base_path, year)
