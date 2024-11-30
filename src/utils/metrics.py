@@ -38,7 +38,7 @@ def crps(forecast, observation):
 
 
 
-input_data = '/mnt/data/Weather4Cast/data/2019/HRIT/boxi_0015.train.binarized.252.h5'
+input_data = "../data/2019/HRIT/boxi_0015.train.binarized.252.h5'
 hrit_file = h5py.File(input_data, 'r')
 img = hrit_file['Binarized-REFL-BT'][:]  # Shape: (20308, 252, 252)
 # selected_channels_indices = [3, 4, 5, 6]
@@ -49,7 +49,7 @@ img = np.nan_to_num(img, nan=0.0, posinf=0.0, neginf=0.0)
 img=img[50:60,:,:]
 print(img.shape)
 
-target_data = '/mnt/data/Weather4Cast/data/2019/OPERA-CONTEXT/boxi_0015.train19.rates.crop.252.h5'
+target_data = '../data/2019/OPERA-CONTEXT/boxi_0015.train19.rates.crop.252.h5'
 opera_file = h5py.File(target_data, 'r')
 target_data = opera_file['rates.crop'][:]
 target_data = np.nan_to_num(target_data, nan=0.0, posinf=0.0, neginf=0.0)
