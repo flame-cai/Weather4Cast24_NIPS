@@ -16,18 +16,14 @@ from src.utils.metrics import crps
 # Custom Dataset
 class Pix2PixTestDataset(Dataset):
     def __init__(self, input_sequence_length=1, output_sequence_length=1):
-        self.input_data = '/mnt/data/Weather4Cast/data/combined_hrit.h5'
-        # self.input_data = "/mnt/data/Weather4Cast/data/2019/HRIT/roxi_0004.train.binarized.252.h5"
-        self.target_data = '/mnt/data/Weather4Cast/data/combined_opera.h5'
-        # self.target_data = "/mnt/data/Weather4Cast/data/2019/OPERA-CONTEXT/roxi_0004.train19.rates.crop.252.h5"
+        self.input_data = '../'#path to input
+        self.target_data = '../'#path to target
         self.hrit_file = h5py.File(self.input_data, 'r')
         self.opera_file = h5py.File(self.target_data, 'r')
-        valid_indices = pd.read_csv('/mnt/data/Weather4Cast/indices_2019_training.csv')['valid_indices'].tolist()
+        # valid_indices = pd.read_csv('../')['valid_indices'].tolist()
         self.input_data = self.hrit_file['Binarized-REFL-BT'][:]/150 -1
         self.target_data = self.opera_file['rates.crop'][:]
-        # self.target_data[self.target_data <= 0] = -1
         self.target_data = self.target_data/5 -1
-        # self.target_data[self.target_data>0]=(np.log2(self.target_data[self.target_data>0]))/5
         self.input_sequence_length = input_sequence_length
         self.output_sequence_length = output_sequence_length
         self.input_data = np.nan_to_num(self.input_data, nan=np.nanmax(self.input_data), posinf=np.nanmax(self.input_data), neginf=np.nanmax(self.input_data))
@@ -217,7 +213,6 @@ def train_improved_pix2pix(generator, discriminator, train_loader, num_epochs, d
             loss_g_pixel = criterion_pixelwise(fake_B, real_B.squeeze(2)) * 100
             
             # Adjust perceptual loss for multi-channel input
-            # loss_g_perceptual = sum(criterion_perceptual(fake_B[:, i], real_B[:, i]) for i in range(fake_B.size(1))) * 10 / fake_B.size(1)
             loss_g_perceptual = criterion_perceptual(fake_B,real_B.squeeze(2)) * 10
             
             loss_g = loss_g_gan + loss_g_pixel + loss_g_perceptual
@@ -257,7 +252,7 @@ if __name__ == "__main__":
     input_sequence_length = 1
     output_sequence_length = 1
     batch_size = 16
-    num_epochs = 50
+    num_epochs = 200
     best_loss = float('inf')
 
     # Initialize dataset and dataloader
@@ -279,7 +274,7 @@ if __name__ == "__main__":
     trained_generator = train_improved_pix2pix(generator, discriminator, dataloader, num_epochs, device)
     
     # Save the trained generator
-    torch.save(trained_generator.state_dict(), 'improved_generator_combined_50i.pth')
+    torch.save(trained_generator.state_dict(), 'improved_generator_combined_200i.pth')
     print("Model saved successfully!")
 
 
